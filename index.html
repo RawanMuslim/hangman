@@ -105,7 +105,6 @@ z-index:999;
 
 <div id="word"></div>
 
-<!-- 💡 التلميح -->
 <div id="hint" style="margin-top:10px; color:#00ffcc;"></div>
 
 <div id="letters"></div>
@@ -138,17 +137,18 @@ let wrong = 0;
 let score = 0;
 let level = 1;
 
-/* 🧠 إضافات الذكاء */
 let winStreak = 0;
 let loseStreak = 0;
 
-/* 💡 التلميح */
 let currentHint = "";
 
 const maxWrong = 6;
 
 let canvas = document.getElementById("hangman");
 let ctx = canvas.getContext("2d");
+
+/* 🧠 منع التكرار */
+let usedWords = [];
 
 /* 🧠 ذكاء اختيار الصعوبة */
 function adaptiveLevel() {
@@ -189,7 +189,17 @@ function generateWord() {
   else if (level <= 5) list = medium;
   else list = hard;
 
-  let item = list[Math.floor(Math.random()*list.length)];
+  /* 🔥 بدون تكرار */
+  let available = list.filter(w => !usedWords.includes(w.word));
+
+  if (available.length === 0) {
+    usedWords = [];
+    available = list;
+  }
+
+  let item = available[Math.floor(Math.random()*available.length)];
+
+  usedWords.push(item.word);
 
   currentHint = item.hint;
   return item.word;
@@ -206,7 +216,6 @@ function startGame() {
   document.getElementById("status").innerText = "";
   document.getElementById("level").innerText = level;
 
-  /* 💡 عرض التلميح */
   document.getElementById("hint").innerText = "💡 Hint: " + currentHint;
 
   createLetters();
@@ -370,4 +379,3 @@ function drawHangman() {
 
 </body>
 </html>
-
