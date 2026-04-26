@@ -105,6 +105,9 @@ z-index:999;
 
 <div id="word"></div>
 
+<!-- 💡 التلميح -->
+<div id="hint" style="margin-top:10px; color:#00ffcc;"></div>
+
 <div id="letters"></div>
 
 <div id="status"></div>
@@ -139,6 +142,9 @@ let level = 1;
 let winStreak = 0;
 let loseStreak = 0;
 
+/* 💡 التلميح */
+let currentHint = "";
+
 const maxWrong = 6;
 
 let canvas = document.getElementById("hangman");
@@ -152,19 +158,45 @@ function adaptiveLevel() {
   if (level < 1) level = 1;
 }
 
-/* 🔁 كلمات حسب المستوى */
+/* 🔁 كلمات + تلميحات */
 function generateWord() {
-  const easy = ["cat","dog","tree","book","game"];
-  const medium = ["javascript","rocket","window","planet","button"];
-  const hard = ["asynchronous","algorithm","developer","hangman"];
+  const easy = [
+    {word:"cat", hint:"🐱 Animal"},
+    {word:"dog", hint:"🐶 Animal"},
+    {word:"tree", hint:"🌳 Nature"},
+    {word:"book", hint:"📚 You read it"},
+    {word:"game", hint:"🎮 Fun activity"}
+  ];
 
-  if (level <= 2) return easy[Math.floor(Math.random()*easy.length)];
-  if (level <= 5) return medium[Math.floor(Math.random()*medium.length)];
-  return hard[Math.floor(Math.random()*hard.length)];
+  const medium = [
+    {word:"javascript", hint:"💻 Programming language"},
+    {word:"rocket", hint:"🚀 Goes to space"},
+    {word:"window", hint:"🪟 In your house"},
+    {word:"planet", hint:"🌍 In space"},
+    {word:"button", hint:"🔘 You click it"}
+  ];
+
+  const hard = [
+    {word:"asynchronous", hint:"⚡ Programming concept"},
+    {word:"algorithm", hint:"🧠 Step-by-step solution"},
+    {word:"developer", hint:"👨‍💻 Builds software"},
+    {word:"hangman", hint:"🎮 This game"}
+  ];
+
+  let list;
+
+  if (level <= 2) list = easy;
+  else if (level <= 5) list = medium;
+  else list = hard;
+
+  let item = list[Math.floor(Math.random()*list.length)];
+
+  currentHint = item.hint;
+  return item.word;
 }
 
 function startGame() {
-  adaptiveLevel(); // 🧠 ذكاء قبل كل جولة
+  adaptiveLevel();
 
   selectedWord = generateWord();
   guessed = [];
@@ -173,6 +205,9 @@ function startGame() {
   document.getElementById("wrong").innerText = wrong;
   document.getElementById("status").innerText = "";
   document.getElementById("level").innerText = level;
+
+  /* 💡 عرض التلميح */
+  document.getElementById("hint").innerText = "💡 Hint: " + currentHint;
 
   createLetters();
   updateWord();
@@ -335,3 +370,4 @@ function drawHangman() {
 
 </body>
 </html>
+
